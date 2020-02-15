@@ -70,24 +70,86 @@ const 참조자라고 해서 const 객체만 받을 수 있는 것은 아니다.
 기존에 const 참조자는 인자로 리터럴 및 변수(또는 객체)를 받을 수 있었던 것처럼  
 const 객체도 물론 받을 수 있다고 이해를 하는 것이 더 편하다.   
 위 코드에서는 받는 객체에 따라 실행 함수를 달리 하고 있다.     
-
-
-
- 
-### 1.2.1. 내용1
-```
-내용1
-```
-
+   
 ***
-# 2. 대주제
-> 인용
-## 2.1. 소 주제
-### 2.1.1. 내용1
-```
-내용1
-```   
+# 2. 클래스와 함수에 대한 friend 선언     
+A클래스가 B클래스 , C클래스와 전역 메소드 friend 선언을 했다고 가정을 하면  
+B클래스, C클래스, 전역 메소드는 A클래스의 priavte 멤버에 접근이 가능해진다.  
+즉, friend 선언은 나의 private에 접근을 허용하겠다는 의미이다.  
 
+다시 예를 들자면 A클래스가 B클래스를 friend로 선언을 했다면     
+B클래스의 멤버 함수들은 A클래스의 private 에 접근할 수 있다.     
+하지만 그 반대로 A클래스는 B클래스의 private에 접근할 수는 없다.     
+      
+만약 B클래스도 A클래스를 friend로 지정을 할 경우     
+양측의 private에 접근이 가능한 형태가 되지만 이는 정보은닉에 위배되는 형태가 될 것이다.   
+그래서 특정한 경우 일 때 사용하는 것이 좋다. (가급적 사용하지 않도록 하자)   
+          
+## 2.1. 클래스에 fiend 선언하기
+   
+**Boy.class**
+```
+class Boy
+{
+private:
+   int height;
+   friend class Girl;
+public:
+   Boy(int len) : height(len)
+   { }
+   . . . . .
+};
+```
+friend 선언은 private 멤버의 접근을 허용하는 선언이다.    
+friend 선언은 정보 은닉에 반하는 선언이기 때문에 매우 제한적으로 선언되어야 한다.    
+       
+프랜드 선언은 값을 할당해주지 않아도 된다.(생성자에서 제외된 것을 보면 알 수 있다.)     
+   
+**Girl.class**
+```
+class Girl
+{
+private: 
+   char phNum[20];
+public: 
+   Girl(char * num)
+   {
+      strcpy(phNum, num);
+   }
+   void ShowYourFriendInfo(Boy &frn)
+   {
+      cout<<"His height:"<<frn.height<<endl;
+   }
+}
+```
+Girl이 Boy의 friend로 선언되었으므로, private 멤버에 직접 접근이 가능하다.  
+     
+## 2.2. 함수에 fiend 선언하기
+
+**Point.class**
+```
+class Point
+{
+private:
+   int x;
+   int y;
+public:
+   Point(const int &xpos, const int &ypos) : x(xpos), y(ypos)
+   { }
+   friend Point PointOP::PonitAdd(const Point&, const Point&); //클래스의 특정 함수를 대상으로도 friend 가능
+   friend Point PointOP::PonitSub(const Point&, const Point&); //클래스의 특정 함수를 대상으로도 friend 가능
+   friend void ShowPointPos(const Point&); // 전역변수
+};
+```
+**PointOP.cpp**
+```
+Point PointOP::PonitAdd(const Point& pnt1, const Point& pnt2)
+{
+   opcnt++;
+   return Point(pnt1.x+pnt2.x, pnt1.y+pnt2.y);
+}
+
+```
 ***
 # 3. 대주제
 > 인용
