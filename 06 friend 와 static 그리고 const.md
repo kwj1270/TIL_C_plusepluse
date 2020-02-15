@@ -141,6 +141,8 @@ public:
    friend void ShowPointPos(const Point&); // 전역변수
 };
 ```
+참고로 friend 선언시에 매개 변수명은 넣어주지 않아도 된다.      
+   
 **PointOP.cpp**
 ```
 Point PointOP::PonitAdd(const Point& pnt1, const Point& pnt2)
@@ -148,8 +150,21 @@ Point PointOP::PonitAdd(const Point& pnt1, const Point& pnt2)
    opcnt++;
    return Point(pnt1.x+pnt2.x, pnt1.y+pnt2.y);
 }
-
+Point PointOP::PonitSub(const Point& pnt1, const Point& pnt2)
+{
+   opcnt++;
+   return Point(pnt1.x-pnt2.x, pnt1.y-pnt2.y);
+}
 ```
+**전역**
+```
+void ShowPointPos(const Point& pos)
+{
+   cout<<"x :"<<pos.x<<", ";
+   cout<<"y :"<<pos.y<<endl;
+}
+```
+
 ***
 # 3. 대주제
 > 인용
