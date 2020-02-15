@@ -164,12 +164,109 @@ void ShowPointPos(const Point& pos)
    cout<<"y :"<<pos.y<<endl;
 }
 ```
+    
+***    
+# 3. C++ 에서의 static  
+C언어에서의 static은 전역변수와 지역변수를 대상으로 선언할 수 있었다.  
+변수에 static 선언을 할 경우 시작과 동시에 메모리에 올라가서 종료될 때 내려온다.    
+  
+지역변수에 static은 실질적으로 전역변수와 같이 사용이 가능했고       
+전역변수에서의 static은 범위를 파일내로 한정 짓기에 extern 선언을 하더라도 접근이 불가능 해졌다.     
 
-***
-# 3. 대주제
-> 인용
-## 3.1. 소 주제
-### 3.1.1. 내용1
+C++은 클래스라는 개념이 추가되었기에 멤버변수와 멤버함수에도 static을 사용할 수 있다.     
+클래스의 static 변수도 이와 마찬가지이다.          
+클래스를 기반으로 객체가 생성되면 메모리에 올라가서 종료될 때 내려온다.        
+**그리고 같은 클래스를 기반으로 하는 모든 객체에서 공통으로 사용할 수 있다.**        
+**그리고 이렇게 공통으로 사용하기 위해서는 변수나 함수를 public 선언을 해주는 것이 좋다.**       
+(외부에서 ```A::변수``` ```A::함수``` 이렇게 사용도 할 수 있기 때문이다.)         
+
+## 3.1. C언어에서의 이야기한 static
+* 전역변수에 선언된 static : 선언된 파일 내에서만 참조를 허용
+* 함수내 변수에 선언된 static : 한번만 초기화되고, 지역변수와 달리 빠져나가도 소멸되지 않는다.  
+
 ```
-내용1
+void Counter()
+{
+   static int cnt;
+   cnt++;
+   cout<<"Current cnt: "<<cnt<<endl;
+}
+```
+```
+int main(void)
+{
+   for(int i=0;i<10;i++){
+      Counter();
+   }
+   return 0;
+}
+```
+```
+1 2 3 4 5 6 7 8 9 10
+```
+   
+## 3.2. static 멤버변수(클래스 변수)
+```
+class SoSimple
+{
+private:
+   static int simObjCnt;   
+
+public:
+   SoSimple()
+   {
+      simObjCnt++;
+      cout<<simObjCnt<<"번째 SoSimple 객체"<<endl;
+   }
+};
+int SoSimple::simObjCnt=0; 
+```
+static 변수는 실질적으로 멤버는 아니기에 밖에서 초기화를 진행해주어야 한다.     
+만약 생성자내에서 초기화를 진행해주면 객체 생성할 때마다 초기화가 진행되어서 생성자에 넣으면 안된다.   
+또한 클래스에서 ```자료형 변수=값``` 초기화를 진행할 수 없기에 이렇게 작성해야한다.    
+
+static 변수는 객체 별로 존재하는 변수가 아닌, 프로그램 전체 영역에서 하나만 존재하는 변수이다.     
+프로그램 실행과 동시에 초기화되어 메모리 공간에 할당된다.      
+
+```
+int main(void)
+{
+   SoSimple sim1; // simObjCnt -> 1 
+   SoSimple sim2; // simObjCnt -> 2
+   SoSimple sim3; // simObjCnt -> 3
+}
+```
+     
+## 3.3. static 멤버변수의 접근 방법
+```
+class SoSimple
+{
+public:
+   static int simObjCnt;   
+
+public:
+   SoSimple()
+   {
+      simObjCnt++;
+   }
+};
+int SoSimple::simObjCnt=0; 
+```
+staitic 변수를 public으로 선언을하게 된다면 ```SoSimple::simObjCnt```로 접근이 가능하다.   
+```
+int main(void)
+{
+   cout<<SoSimple::simObjCnt<<"번째 SoSimple객체"<<endl;
+   SoSimple sim1;
+   SoSimple sim2;
+   cout<<SoSimple::simObjCnt<<"번째 SoSimple 객체<<endl;"
+   cout<<sim1.simObjCnt<<"번째 SoSimple 객체"<<endl;
+   cout<<sim2.simObjCnt<<"번째 SoSimple 객체"<<endl; 
+}
+```
+```
+0번째 SoSimple 객체
+2번째 SoSimple 객체
+2번째 SoSimple 객체
+2번째 SoSimple 객체
 ```
