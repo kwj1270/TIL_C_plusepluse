@@ -222,7 +222,7 @@ public:
 int SoSimple::simObjCnt=0; 
 ```
 static 변수는 실질적으로 멤버는 아니기에 밖에서 초기화를 진행해주어야 한다.     
-만약 생성자내에서 초기화를 진행해주면 객체 생성할 때마다 초기화가 진행되어서 생성자에 넣으면 안된다.   
+만약 생성자내에서 초기화를 진행해주면 생성할 때마다 초기화가 진행기에 생성자에 넣으면 안된다.   
 또한 클래스에서 ```자료형 변수=값``` 초기화를 진행할 수 없기에 이렇게 작성해야한다.    
 
 static 변수는 객체 별로 존재하는 변수가 아닌, 프로그램 전체 영역에서 하나만 존재하는 변수이다.     
@@ -264,9 +264,83 @@ int main(void)
    cout<<sim2.simObjCnt<<"번째 SoSimple 객체"<<endl; 
 }
 ```
+물론 ```객체.변수```로 접근을 해도 되지만 멤버 변수인지 static 변수인지 분간이 안 된다.   
 ```
 0번째 SoSimple 객체
 2번째 SoSimple 객체
 2번째 SoSimple 객체
 2번째 SoSimple 객체
 ```
+    
+## 3.4. static 멤버함수     
+      
+* 선언된 클래스의 모든 객체가 공유한다.       
+* public으로 선언이 되면, 클래스의 이름을 이용해서 호출이 가능하다.        
+* 객체의 멤버로 존재하는 것이 아니다.        
+     
+```
+class SoSimple
+{
+private:
+   int num1;
+   static int num2;
+public:
+   SoSimple(int n): num1(n)
+   { }
+   static void Adder(int n)
+   {
+      // num1 += n; 컴파일 에러
+      num2 += n;
+   }
+}
+int SoSimple::num2=0;
+```   
+static 함수는 객체 내에 존재하는 함수가 아니기 때문에 멤버변수나 멤버함수에 접근이 불가능하다.              
+static 함수는 static 변수에만 접근 가능하고, static 함수만 호출 가능하다.              
+(단, 멤버 변수는 static 멤버에 접근이 가능하다. 이유는 이미 생성되었기 때문이다.)           
+    
+## 3.5. const static 멤버와 mutable   
+**const static**
+```
+class CountryArea
+{
+public:
+   const static int RUSSIA = 1707540;
+   const static int CANADA = 998467;
+   const static int CHINA = 957290;
+   const static int SOUTH_KOREA = 9992;
+};
+
+int main(void)
+{
+   cout<<"러시아 면적: "<<CountryArea::RUSSIA<<"km2"<<endl;
+   cout<<"캐나다 면적: "<<CountryArea::CANADA<<"km2"<<endl;
+   cout<<"중국 면적: "<<CountryArea::CHINA<<"km2"<<endl;
+   cout<<"한국 면적: "<<CountryArea::SOUTH_KOREA<<"km2"<<endl;
+   return 0;
+}
+```
+const static 멤버 변수는,   
+클래스가 정의될 때 지정된 값이 유지되는 상수이기 때문에(순수하게 참조를 위한 변수),     
+위 예제에서 보이는 바와 같이 초기화가 가능하도록 문법으로 정의하고 있다.      
+```(const 지정안하면 위와 같이 초기화를 진행할 수 없다)```   
+  
+**mutable**
+```
+class SoSimple
+{
+private: 
+   int num1;
+   mutable int num2;
+public:
+   SoSimple(int n1, int n2)
+      : num1(num1)
+   { }
+   void CopyToNum2() const
+   {
+      num2 = num1;
+   }
+}
+```
+mutable로 선언된 멤버변수는 const 함수 내에서 값의 변경이 가능하다.       
+그럼 const 객체에서 사용된다고 보면 되겠다.(const 객체에서 유일하게 값 변경 가능 변수)     
